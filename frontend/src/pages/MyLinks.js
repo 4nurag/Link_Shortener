@@ -1,26 +1,43 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+
+import UserContext from '../context/UserContext'
 
 
 const MyLinks = () => {
   const [ links, setLinks ] = useState([])
+  const { userInfo, updateUserInfo } = useContext(UserContext)
+  const navigate = useNavigate()
 
   const getLinks = async() => {
-      const response = await fetch('http://127.0.0.1:8000/api/link/get-links/')
+      const response = await fetch('/api/link/get-links/', {
+        method: "GET",
+        headers: {
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${userInfo.access_token}`
+        }
+      })
       const data = await response.json()
       setLinks(data)
       console.log(data)
   }
 
   useEffect(() => {
-    getLinks()
+    if (userInfo.access_token){
+      getLinks()
+
+    }
+    else{
+      navigate('/login')
+    }
   },[])
 
   const handleDelete = async (hash) => {
-    await fetch(`http://127.0.0.1:8000/api/link/delete-link/${hash}`, {
+    await fetch(`/api/link/delete-link/${hash}`, {
       method: "DELETE",
       headers: {
-        "Content-Type":"application/json"
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${userInfo.access_token}`
       }
     })
     getLinks()
@@ -30,7 +47,7 @@ const MyLinks = () => {
     <div className="container-sm mt-5">
         <ul className="list-group">
           {links.map((link, index) => (
-            <li className="list-group-item d-flex justify-content-between align-items-center">
+            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
               <Link to={link.source_link} target="_blank">{link.source_link.slice(0, 50)}</Link>
               <Link to={`/link/${link.hash}/`} target="_blank">Https://mydomain.com/link/{link.hash}/</Link>
               <div onClick={()=>(handleDelete(link.hash))} className="btn btn-danger">Delete</div>

@@ -6,7 +6,7 @@ const RedirectPage = () => {
     const { hash } = useParams()
 
     const getMyLink = async() => {
-        const response = await fetch(`http://127.0.0.1:8000/api/link/get-link/${hash}/`)
+        const response = await fetch(`/api/link/get-link/${hash}/`)
         const data = await response.json()
         setMyLink(data)
     }

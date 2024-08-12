@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 
+import UserContext from '../context/UserContext'
+
 const Header = () => {
+  const { userInfo, updateUserInfo } = useContext(UserContext)
   return (
     <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -20,11 +23,16 @@ const Header = () => {
         </li>
       </ul>
       <span className="navbar-text">
-        <div className="d-flex">
+        {userInfo.username ? (
+            <>Hello {userInfo?.username} ! <Link to="/logout/">Logout</Link></>
+        ):(
+          <div className="d-flex">
           <Link className="nav-link" to='/login/'>Login</Link>
           /
           <Link className="nav-link" to='/register/'>Register</Link>
         </div>
+        )}
+        
       </span>
     </div>
   </div>

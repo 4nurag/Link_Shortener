@@ -1,17 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
+
+import UserContext from '../context/UserContext'
 
 const HomePage = () => {
 
   const [myLink, setMyLink] = useState([])
   const [ sourceLink, setSourceLink ] = useState([])
+  const { userInfo, updateUserInfo } = useContext(UserContext)
 
   const createLink = async () => {
-    const response = await fetch('http://127.0.0.1:8000/api/link/shortener/', {
+    const headers = {
+      "Content-Type":"application/json",
+
+    }
+
+    if (userInfo.access_token){
+      headers["Authorization"] = `Bearer ${userInfo.access_token}`
+    }
+    const response = await fetch('/api/link/shortener/', {
         method: "POST",
-        headers: {
-            "Content-Type":"application/json"
-        },
+        headers: headers,
         body:JSON.stringify({
             "source_link": sourceLink,
         })
